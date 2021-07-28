@@ -125,10 +125,11 @@ class EllipticalArc(Arc):
         print("Minimum distance is undefined for elliptical arcs right now")
 
     def printArc(self):
-        print((self.center.x, self.center.y), self.a, self.b, self.theta1, self.theta2)
+        return (self.center.x, self.center.y), self.a, self.b, self.theta1, self.theta2
 
 class CircularArc(Arc):
     def __init__(self, radius, theta1, theta2, center = None, lw = 7, color = (0,0,0)):
+        self.radius = radius # redundant for readability later
         super().__init__(radius, radius, theta1, theta2, center, lw, color)
 
     def getCenterOfMass(self):
@@ -211,7 +212,7 @@ class CircularArc(Arc):
 
 
     def printArc(self):
-        print((self.center.x, self.center.y), self.a, self.theta1, self.theta2)
+         return (self.center.x, self.center.y), self.radius, self.theta1, self.theta2
 
 
 

@@ -8,8 +8,9 @@ from scipy import integrate, ndimage
 from Arc import CircularArc, EllipticalArc
 import math
 from PIL import Image
-
-
+import datetime
+import os
+import csv
 
 def parseInfo(inputs):
     parsedInputs = []
@@ -60,7 +61,7 @@ def generateArcs(curvature, length, eccentricity, amount):
             finishedArcs.append(arc)
 
     for arc in finishedArcs:
-        arc.printArc()
+        print(arc.printArc())
     return finishedArcs
 
 
@@ -236,6 +237,32 @@ def createArcsFromArcString(arcStrings):
 
     return arcs
 
+def saveCircularArcData(arcs, image, fileName = None):
+    if not fileName:
+        # default fileName is date-time
+        currentTime = datetime.datetime.now()
+        date = currentTime.strftime("%x").replace("/","")
+        time = currentTime.strftime("%X").replace(":","")
+        fileName = date + "-" + time
+
+    folderName = "hairTests"
+
+    # Create folder if it doesn't yet exist
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+    
+    csvTitles = ["Number", "Center", "Radius", "Theta1", "Theta2"]
+    csvInfo = [[i, *arc.printArc()] for i, arc in enumerate(arcs)]
+
+    image.savefig(f"{folderName}/{fileName}.tiff", bbox_inches='tight', pad_inches=0)
+
+    with open(f"{folderName}/{fileName}.csv", 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(csvTitles)
+        writer.writerows(csvInfo)
+
+    
+
 if __name__ == "__main__":
     """
     print("running")
@@ -244,14 +271,12 @@ if __name__ == "__main__":
     generateImage(arcs, show = True)
     #"""
 
-
-    arcStrings = """(200, 200) 50 0 6.29
+    arcStrings = """(200, 200) 50 0 6.28
 (271, 271) 50 1.5707 6.29"""
     arcs = createArcsFromArcString(arcStrings)
-    a1, a2 = arcs
+    img = generateImage(arcs)
 
-    print("Distance =", round(a2.getMinimumDistance(a1), 3))
-    generateImage(arcs, show = True)
+    saveCircularArcData(arcs, img)
 
 
     
